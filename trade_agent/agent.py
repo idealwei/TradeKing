@@ -58,11 +58,11 @@ class TradingAgent:
             if not self.data_fetcher:
                 # Provide empty default data when no data_fetcher is configured
                 default_data = {
-                    "account_data": "{}",
-                    "positions_data": "{}",
-                    "market_data": "{}",
-                    "assets_data": "{}",
-                    "orders_data": "{}",
+                    "account_data": {},
+                    "positions_data": {},
+                    "market_data": {},
+                    "assets_data": {},
+                    "orders_data": {},
                 }
                 for key in missing_keys:
                     if key in default_data:

@@ -87,6 +87,9 @@ async def execute_decision(
             timestamp=decision_record.timestamp,
         )
 
+    except HTTPException:
+        # Re-raise HTTPExceptions (like 400 errors) without catching them
+        raise
     except Exception as e:
         execution_time_ms = (time.time() - start_time) * 1000
         logger.exception(
