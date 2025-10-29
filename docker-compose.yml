@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  tradeking:
+    build: .
+    container_name: tradeking
+    ports:
+      - "8000:8000"
+    environment:
+      # Model Configuration
+      - TRADE_AGENT_MODEL=${TRADE_AGENT_MODEL:-gpt5}
+      - TRADE_AGENT_TEMPERATURE=${TRADE_AGENT_TEMPERATURE:-0.4}
+      - TRADE_AGENT_MAX_OUTPUT_TOKENS=${TRADE_AGENT_MAX_OUTPUT_TOKENS:-1024}
+
+      # API Keys
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - LONGBRIDGE_ACCESS_TOKEN=${LONGBRIDGE_ACCESS_TOKEN}
+
+      # Server Configuration
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=8000
+      - DEBUG=${DEBUG:-false}
+
+      # Database
+      - DATABASE_URL=sqlite:///./data/tradeking.db
+
+      # Scheduler
+      - SCHEDULER_ENABLED=${SCHEDULER_ENABLED:-true}
+      - SCHEDULER_INTERVAL_MINUTES=${SCHEDULER_INTERVAL_MINUTES:-5}
+
+      # Logging
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - LOG_FILE=/app/logs/tradeking.log
+
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
