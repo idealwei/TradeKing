@@ -8,7 +8,28 @@ from typing import List, Optional
 from sqlalchemy import desc, func
 from sqlalchemy.orm import Session
 
+from trade_agent.config import ModelChoice
+
 from .models import ModelPerformance, PortfolioSnapshot, TradingDecision
+
+
+def _normalize_model_choice_for_storage(model_choice: Optional[str]) -> Optional[str]:
+    if model_choice is None:
+        return None
+    try:
+        return ModelChoice.from_string(model_choice).value
+    except ValueError:
+        return model_choice.lower()
+
+
+def _expand_model_choice_aliases(model_choice: Optional[str]) -> List[str]:
+    if not model_choice:
+        return []
+    try:
+        choice = ModelChoice.from_string(model_choice)
+        return sorted(choice.aliases)
+    except ValueError:
+        return [model_choice.lower()]
 
 
 class TradingDecisionRepository:
@@ -31,8 +52,9 @@ class TradingDecisionRepository:
         error_message: Optional[str] = None,
     ) -> TradingDecision:
         """Create a new trading decision record."""
+        normalized_choice = _normalize_model_choice_for_storage(model_choice)
         decision_record = TradingDecision(
-            model_choice=model_choice,
+            model_choice=normalized_choice,
             temperature=temperature,
             decision=decision,
             account_data=account_data,
@@ -58,9 +80,10 @@ class TradingDecisionRepository:
     @staticmethod
     def get_by_model(db: Session, model_choice: str, limit: int = 100) -> List[TradingDecision]:
         """Get trading decisions for a specific model."""
+        aliases = _expand_model_choice_aliases(model_choice)
         return (
             db.query(TradingDecision)
-            .filter(TradingDecision.model_choice == model_choice)
+            .filter(TradingDecision.model_choice.in_(aliases))
             .order_by(desc(TradingDecision.timestamp))
             .limit(limit)
             .all()
@@ -75,7 +98,8 @@ class TradingDecisionRepository:
             TradingDecision.timestamp >= start_date, TradingDecision.timestamp <= end_date
         )
         if model_choice:
-            query = query.filter(TradingDecision.model_choice == model_choice)
+            aliases = _expand_model_choice_aliases(model_choice)
+            query = query.filter(TradingDecision.model_choice.in_(aliases))
         return query.order_by(TradingDecision.timestamp).all()
 
 
@@ -85,10 +109,16 @@ class ModelPerformanceRepository:
     @staticmethod
     def get_or_create(db: Session, model_choice: str) -> ModelPerformance:
         """Get existing performance record or create a new one."""
-        perf = db.query(ModelPerformance).filter(ModelPerformance.model_choice == model_choice).first()
+        normalized_choice = _normalize_model_choice_for_storage(model_choice)
+        aliases = _expand_model_choice_aliases(model_choice)
+        perf = db.query(ModelPerformance).filter(ModelPerformance.model_choice.in_(aliases)).first()
         if not perf:
-            perf = ModelPerformance(model_choice=model_choice)
+            perf = ModelPerformance(model_choice=normalized_choice)
             db.add(perf)
+            db.commit()
+            db.refresh(perf)
+        elif perf.model_choice != normalized_choice:
+            perf.model_choice = normalized_choice
             db.commit()
             db.refresh(perf)
         return perf
@@ -155,7 +185,7 @@ class PortfolioSnapshotRepository:
     ) -> PortfolioSnapshot:
         """Create a new portfolio snapshot."""
         snapshot = PortfolioSnapshot(
-            model_choice=model_choice,
+            model_choice=_normalize_model_choice_for_storage(model_choice),
             total_value=total_value,
             cash_balance=cash_balance,
             positions=positions,
@@ -172,9 +202,10 @@ class PortfolioSnapshotRepository:
     @staticmethod
     def get_equity_curve(db: Session, model_choice: str, limit: int = 1000) -> List[PortfolioSnapshot]:
         """Get portfolio snapshots for equity curve visualization."""
+        aliases = _expand_model_choice_aliases(model_choice)
         return (
             db.query(PortfolioSnapshot)
-            .filter(PortfolioSnapshot.model_choice == model_choice)
+            .filter(PortfolioSnapshot.model_choice.in_(aliases))
             .order_by(PortfolioSnapshot.timestamp)
             .limit(limit)
             .all()
@@ -185,5 +216,6 @@ class PortfolioSnapshotRepository:
         """Get the most recent portfolio snapshot."""
         query = db.query(PortfolioSnapshot)
         if model_choice:
-            query = query.filter(PortfolioSnapshot.model_choice == model_choice)
+            aliases = _expand_model_choice_aliases(model_choice)
+            query = query.filter(PortfolioSnapshot.model_choice.in_(aliases))
         return query.order_by(desc(PortfolioSnapshot.timestamp)).first()

@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, Optional
+from typing import Dict, Optional, Set
 
 
 class ModelChoice(str, Enum):
@@ -13,6 +13,31 @@ class ModelChoice(str, Enum):
 
     GPT5 = "gpt5"
     DEEPSEEK = "deepseek"
+
+    @classmethod
+    def from_string(cls, value: str) -> "ModelChoice":
+        """Parse user-provided identifiers and return the canonical choice."""
+        normalized = value.strip().lower()
+        try:
+            return _MODEL_CHOICE_ALIASES[normalized]
+        except KeyError as exc:
+            raise ValueError(f"Unsupported model choice: {value}") from exc
+
+    @property
+    def aliases(self) -> Set[str]:
+        """Return every identifier that should map to this model choice."""
+        return {alias for alias, choice in _MODEL_CHOICE_ALIASES.items() if choice is self}
+
+
+_MODEL_CHOICE_ALIASES: Dict[str, ModelChoice] = {
+    ModelChoice.GPT5.value: ModelChoice.GPT5,
+    "gpt-5": ModelChoice.GPT5,
+    "gpt_5": ModelChoice.GPT5,
+    "gpt5.0": ModelChoice.GPT5,
+    ModelChoice.DEEPSEEK.value: ModelChoice.DEEPSEEK,
+    "deepseek-chat": ModelChoice.DEEPSEEK,
+    "deepseek_chat": ModelChoice.DEEPSEEK,
+}
 
 
 @dataclass
@@ -82,7 +107,7 @@ class AgentSettings:
         """Create settings using environment variables."""
         model_choice = os.getenv("TRADE_AGENT_MODEL", ModelChoice.GPT5.value)
         try:
-            parsed_model = ModelChoice(model_choice.lower())
+            parsed_model = ModelChoice.from_string(model_choice)
         except ValueError as exc:
             raise ValueError(f"Unsupported TRADE_AGENT_MODEL: {model_choice}") from exc
 

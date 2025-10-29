@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from storage import get_db
 from storage.repository import PortfolioSnapshotRepository
+from trade_agent.config import ModelChoice
 
 from ..schemas import EquityCurvePoint, EquityCurveResponse, PortfolioSnapshotResponse
 
@@ -25,7 +26,14 @@ def get_latest_snapshot(
 
     Optionally filter by model choice to get the latest snapshot for a specific model.
     """
-    snapshot = PortfolioSnapshotRepository.get_latest(db, model_choice=model_choice)
+    normalized_choice: Optional[str] = None
+    if model_choice:
+        try:
+            normalized_choice = ModelChoice.from_string(model_choice).value
+        except ValueError:
+            raise HTTPException(status_code=400, detail=f"Invalid model choice: {model_choice}")
+
+    snapshot = PortfolioSnapshotRepository.get_latest(db, model_choice=normalized_choice)
     if not snapshot:
         raise HTTPException(status_code=404, detail="No portfolio snapshots found")
 
@@ -43,10 +51,15 @@ def get_equity_curve(
 
     Returns historical portfolio values over time for charting.
     """
-    snapshots = PortfolioSnapshotRepository.get_equity_curve(db, model_choice=model_choice, limit=limit)
+    try:
+        choice = ModelChoice.from_string(model_choice)
+    except ValueError:
+        raise HTTPException(status_code=400, detail=f"Invalid model choice: {model_choice}")
+
+    snapshots = PortfolioSnapshotRepository.get_equity_curve(db, model_choice=choice.value, limit=limit)
 
     if not snapshots:
-        raise HTTPException(status_code=404, detail=f"No portfolio data found for model: {model_choice}")
+        raise HTTPException(status_code=404, detail=f"No portfolio data found for model: {choice.value}")
 
     # Convert snapshots to data points
     data_points = [
@@ -58,7 +71,7 @@ def get_equity_curve(
     total_return_pct = ((current_value - initial_value) / initial_value) * 100 if initial_value > 0 else 0.0
 
     return EquityCurveResponse(
-        model_choice=model_choice,
+        model_choice=choice.value,
         data_points=data_points,
         initial_value=initial_value,
         current_value=current_value,

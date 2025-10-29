@@ -37,7 +37,7 @@ class ModelDispatcher:
             "Initializing OpenAI-compatible client",
             extra={"model": config.model_name, "base_url": base_url, "organization": organization},
         )
-        client = OpenAI(api_key=api_key, base_url=base_url, organization=organization)
+        client = OpenAI(api_key=api_key, base_url=base_url)
         self._clients[choice] = client
         return client
 
@@ -67,6 +67,5 @@ class ModelDispatcher:
             ],
             temperature=temp,
             max_tokens=max_tokens,
-            user=user,
         )
         return response.choices[0].message.content.strip()

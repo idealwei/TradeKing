@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from storage import get_db
 from storage.repository import ModelPerformanceRepository
+from trade_agent.config import ModelChoice
 
 from ..schemas import ModelPerformanceResponse
 
@@ -38,8 +39,13 @@ def get_model_performance(
     Args:
         model_choice: Model identifier (e.g., 'gpt5', 'deepseek')
     """
-    performance = ModelPerformanceRepository.get_or_create(db, model_choice=model_choice)
+    try:
+        canonical_choice = ModelChoice.from_string(model_choice).value
+    except ValueError:
+        raise HTTPException(status_code=400, detail=f"Invalid model choice: {model_choice}")
+
+    performance = ModelPerformanceRepository.get_or_create(db, model_choice=canonical_choice)
     if performance.total_decisions == 0:
-        raise HTTPException(status_code=404, detail=f"No decisions found for model: {model_choice}")
+        raise HTTPException(status_code=404, detail=f"No decisions found for model: {canonical_choice}")
 
     return ModelPerformanceResponse.model_validate(performance)

@@ -42,7 +42,7 @@ async def execute_decision(
         settings = AgentSettings.from_env()
         if request.model_choice:
             try:
-                settings.model_choice = ModelChoice(request.model_choice.lower())
+                settings.model_choice = ModelChoice.from_string(request.model_choice)
             except ValueError:
                 raise HTTPException(status_code=400, detail=f"Invalid model choice: {request.model_choice}")
 
@@ -157,12 +157,19 @@ def get_decisions_by_filter(
 
     Supports filtering by model choice and date range.
     """
+    canonical_choice = None
+    if model_choice:
+        try:
+            canonical_choice = ModelChoice.from_string(model_choice).value
+        except ValueError:
+            raise HTTPException(status_code=400, detail=f"Invalid model choice: {model_choice}")
+
     if start_date and end_date:
         decisions = TradingDecisionRepository.get_by_date_range(
-            db, start_date=start_date, end_date=end_date, model_choice=model_choice
+            db, start_date=start_date, end_date=end_date, model_choice=canonical_choice
         )
-    elif model_choice:
-        decisions = TradingDecisionRepository.get_by_model(db, model_choice=model_choice, limit=limit)
+    elif canonical_choice:
+        decisions = TradingDecisionRepository.get_by_model(db, model_choice=canonical_choice, limit=limit)
     else:
         decisions = TradingDecisionRepository.get_latest(db, limit=limit)
 
