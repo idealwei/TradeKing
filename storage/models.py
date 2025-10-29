@@ -6,9 +6,8 @@ from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import JSON, Column, DateTime, Float, Integer, String, Text
-from sqlalchemy.orm import declarative_base
 
-Base = declarative_base()
+from .database import Base
 
 
 class TradingDecision(Base):
