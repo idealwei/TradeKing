@@ -15,11 +15,11 @@ class TestFullTradingWorkflow:
         mock_agent = Mock()
         mock_agent.run.return_value = {
             "decision": "BUY NVDA.US 100 shares at market price",
-            "account_data": '{"balance": 100000}',
-            "positions_data": "{}",
-            "market_data": '{"NVDA.US": {"price": 500}}',
-            "assets_data": "{}",
-            "orders_data": "{}",
+            "account_data": {"balance": 100000},
+            "positions_data": {},
+            "market_data": {"NVDA.US": {"price": 500}},
+            "assets_data": {},
+            "orders_data": {},
             "symbols": ["NVDA.US"],
             "prompt": "Trading analysis prompt",
         }
@@ -68,11 +68,11 @@ class TestFullTradingWorkflow:
         mock_agent = Mock()
         mock_agent.run.return_value = {
             "decision": "Test decision",
-            "account_data": "{}",
-            "positions_data": "{}",
-            "market_data": "{}",
-            "assets_data": "{}",
-            "orders_data": "{}",
+            "account_data": {},
+            "positions_data": {},
+            "market_data": {},
+            "assets_data": {},
+            "orders_data": {},
         }
         mock_create_agent.return_value = mock_agent
 

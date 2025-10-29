@@ -16,11 +16,11 @@ class TestDecisionsEndpoint:
         mock_agent = Mock()
         mock_agent.run.return_value = {
             "decision": "Test trading decision",
-            "account_data": "{}",
-            "positions_data": "{}",
-            "market_data": "{}",
-            "assets_data": "{}",
-            "orders_data": "{}",
+            "account_data": {},
+            "positions_data": {},
+            "market_data": {},
+            "assets_data": {},
+            "orders_data": {},
             "symbols": ["NVDA.US"],
             "prompt": "Test prompt",
         }
@@ -53,11 +53,11 @@ class TestDecisionsEndpoint:
         mock_agent = Mock()
         mock_agent.run.return_value = {
             "decision": "Test decision with default symbols",
-            "account_data": "{}",
-            "positions_data": "{}",
-            "market_data": "{}",
-            "assets_data": "{}",
-            "orders_data": "{}",
+            "account_data": {},
+            "positions_data": {},
+            "market_data": {},
+            "assets_data": {},
+            "orders_data": {},
         }
         mock_create_agent.return_value = mock_agent
 
@@ -84,11 +84,11 @@ class TestDecisionsEndpoint:
         mock_agent = Mock()
         mock_agent.run.return_value = {
             "decision": "Test decision",
-            "account_data": "{}",
-            "positions_data": "{}",
-            "market_data": "{}",
-            "assets_data": "{}",
-            "orders_data": "{}",
+            "account_data": {},
+            "positions_data": {},
+            "market_data": {},
+            "assets_data": {},
+            "orders_data": {},
         }
         mock_create_agent.return_value = mock_agent
 
@@ -127,11 +127,11 @@ class TestDecisionsEndpoint:
         mock_agent = Mock()
         mock_agent.run.return_value = {
             "decision": "Detailed test decision",
-            "account_data": "{}",
-            "positions_data": "{}",
-            "market_data": "{}",
-            "assets_data": "{}",
-            "orders_data": "{}",
+            "account_data": {},
+            "positions_data": {},
+            "market_data": {},
+            "assets_data": {},
+            "orders_data": {},
             "prompt": "Test prompt",
         }
         mock_create_agent.return_value = mock_agent

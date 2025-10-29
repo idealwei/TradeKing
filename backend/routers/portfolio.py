@@ -35,7 +35,7 @@ def get_latest_snapshot(
 
     snapshot = PortfolioSnapshotRepository.get_latest(db, model_choice=normalized_choice)
     if not snapshot:
-        raise HTTPException(status_code=404, detail="No portfolio snapshots found")
+        raise HTTPException(status_code=404, detail="Portfolio snapshot not found")
 
     return PortfolioSnapshotResponse.model_validate(snapshot)
 
@@ -59,7 +59,7 @@ def get_equity_curve(
     snapshots = PortfolioSnapshotRepository.get_equity_curve(db, model_choice=choice.value, limit=limit)
 
     if not snapshots:
-        raise HTTPException(status_code=404, detail=f"No portfolio data found for model: {choice.value}")
+        raise HTTPException(status_code=404, detail=f"Portfolio data not found for model: {choice.value}")
 
     # Convert snapshots to data points
     data_points = [

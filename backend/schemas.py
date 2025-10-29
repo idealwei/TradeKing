@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+import json
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class TradingDecisionResponse(BaseModel):
@@ -33,6 +34,19 @@ class TradingDecisionDetail(TradingDecisionResponse):
     assets_data: Optional[Dict[str, Any]] = None
     orders_data: Optional[Dict[str, Any]] = None
     prompt: Optional[str] = None
+
+    @field_validator("account_data", "positions_data", "market_data", "assets_data", "orders_data", mode="before")
+    @classmethod
+    def parse_json_string(cls, value: Any) -> Optional[Dict[str, Any]]:
+        """Parse JSON strings to dictionaries for backward compatibility."""
+        if value is None:
+            return None
+        if isinstance(value, str):
+            try:
+                return json.loads(value)
+            except json.JSONDecodeError:
+                return {}
+        return value
 
 
 class ModelPerformanceResponse(BaseModel):
