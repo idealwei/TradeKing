@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Dict, Iterable, Optional, TypedDict
 
 from langgraph.graph import END, StateGraph
@@ -12,6 +13,7 @@ from prompts.trade_prompts import TRADE_PROMPT
 from .config import AgentSettings, ModelChoice
 from .models import ModelDispatcher
 from .tools.longbridge import TradingDataFetcher
+from .virtual_account import VirtualAccount
 
 
 class TradingState(TypedDict, total=False):
@@ -39,6 +41,8 @@ class TradingAgent:
 
     settings: AgentSettings
     data_fetcher: Optional[TradingDataFetcher] = None
+    virtual_account: Optional[VirtualAccount] = None
+    account_file: Optional[str | Path] = None
 
     def __post_init__(self) -> None:
         self._dispatcher = ModelDispatcher(self.settings)
@@ -97,7 +101,13 @@ class TradingAgent:
     def run(self, initial_state: Optional[TradingState] = None) -> TradingState:
         """Execute the agent graph and return the final state."""
         state: TradingState = dict(initial_state or {})
-        return self._graph.invoke(state)
+        result = self._graph.invoke(state)
+
+        # Save virtual account state after execution
+        if self.virtual_account and self.account_file:
+            self.virtual_account.save(self.account_file)
+
+        return result
 
 
 def build_trading_graph(agent: TradingAgent):
