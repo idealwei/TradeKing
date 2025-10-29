@@ -56,7 +56,17 @@ class ModelDispatcher:
         config = self._get_model_config(choice)
         temp = temperature if temperature is not None else self._settings.temperature
         max_tokens = max_output_tokens if max_output_tokens is not None else self._settings.max_output_tokens
-
+        logger.info(
+            "Invoking model",
+            extra={
+                "model_choice": choice.value,
+                "model_name": config.model_name,
+                "base_url": config.resolve_base_url(),
+                "organization": config.resolve_organization(),
+                "temperature": temp,
+                "max_tokens": max_tokens,
+            },
+        )
         response = client.chat.completions.create(
             model=config.model_name,
             messages=[

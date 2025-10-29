@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import time
 from datetime import datetime
 from typing import List, Optional
@@ -22,6 +23,7 @@ from ..schemas import (
 )
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.post("/execute", response_model=ExecuteDecisionResponse)
@@ -87,6 +89,14 @@ async def execute_decision(
 
     except Exception as e:
         execution_time_ms = (time.time() - start_time) * 1000
+        logger.exception(
+            "Failed to execute trading decision",
+            extra={
+                "request_model_choice": request.model_choice,
+                "symbols": request.symbols,
+                "execution_time_ms": execution_time_ms,
+            },
+        )
 
         # Store failed decision
         settings = AgentSettings.from_env()
