@@ -6,6 +6,7 @@ import os
 from datetime import datetime
 
 from fastapi import APIRouter, Depends
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from storage import get_db
@@ -25,7 +26,7 @@ def health_check(db: Session = Depends(get_db)) -> HealthResponse:
     # Check database connection
     database_connected = False
     try:
-        db.execute("SELECT 1")
+        db.execute(text("SELECT 1"))
         database_connected = True
     except Exception:
         pass

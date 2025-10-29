@@ -44,6 +44,7 @@ def init_db() -> None:
 
     Should be called on application startup.
     """
-    from .models import Base as ModelsBase
+    # Import models to register them with Base
+    from . import models  # noqa: F401
 
-    ModelsBase.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
