@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - TradeKing</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>TradeKing</h1>
+                <span class="nav-subtitle">AI Trading Agent</span>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Dashboard</a>
+                <a href="/portfolio.html" class="nav-link active">Portfolio</a>
+                <a href="/decisions.html" class="nav-link">Decisions</a>
+                <a href="https://github.com/idealwei/TradeKing" target="_blank" class="nav-link">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Portfolio Header -->
+        <div class="section">
+            <div class="section-header">
+                <h2>Portfolio Overview</h2>
+                <select id="portfolio-model-select" class="select-input" onchange="loadPortfolio()">
+                    <option value="gpt5">GPT-5</option>
+                    <option value="deepseek">DeepSeek</option>
+                </select>
+            </div>
+
+            <!-- Portfolio Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">💼</div>
+                    <div class="stat-content">
+                        <h3 class="stat-label">Total Value</h3>
+                        <p class="stat-value" id="portfolio-total-value">-</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💵</div>
+                    <div class="stat-content">
+                        <h3 class="stat-label">Cash Balance</h3>
+                        <p class="stat-value" id="portfolio-cash">-</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-content">
+                        <h3 class="stat-label">Realized P&L</h3>
+                        <p class="stat-value" id="portfolio-realized-pnl">-</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-content">
+                        <h3 class="stat-label">Unrealized P&L</h3>
+                        <p class="stat-value" id="portfolio-unrealized-pnl">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Holdings Section -->
+        <div class="section">
+            <h2>Current Holdings</h2>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Quantity</th>
+                            <th>Current Price</th>
+                            <th>Market Value</th>
+                            <th>Unrealized P&L</th>
+                            <th>% of Portfolio</th>
+                        </tr>
+                    </thead>
+                    <tbody id="holdings-table">
+                        <tr>
+                            <td colspan="6" class="loading">Loading holdings...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Asset Allocation Chart -->
+        <div class="section">
+            <h2>Asset Allocation</h2>
+            <div class="chart-container" style="max-height: 400px;">
+                <canvas id="allocation-chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 TradeKing. Powered by LangGraph & Longbridge. Built by <a href="https://github.com/idealwei">idealwei</a></p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/portfolio.js"></script>
+</body>
+</html>

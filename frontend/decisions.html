@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decision Log - TradeKing</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>TradeKing</h1>
+                <span class="nav-subtitle">AI Trading Agent</span>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Dashboard</a>
+                <a href="/portfolio.html" class="nav-link">Portfolio</a>
+                <a href="/decisions.html" class="nav-link active">Decisions</a>
+                <a href="https://github.com/idealwei/TradeKing" target="_blank" class="nav-link">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Decision Log Section -->
+        <div class="section">
+            <div class="section-header">
+                <h2>Decision Log</h2>
+                <div class="controls">
+                    <select id="decision-model-filter" class="select-input" onchange="loadDecisions()">
+                        <option value="">All Models</option>
+                        <option value="gpt5">GPT-5</option>
+                        <option value="deepseek">DeepSeek</option>
+                    </select>
+                    <input type="number" id="decision-limit" class="input" value="50" min="10" max="500" onchange="loadDecisions()" placeholder="Limit">
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Timestamp</th>
+                            <th>Model</th>
+                            <th>Decision</th>
+                            <th>Symbols</th>
+                            <th>Exec Time (ms)</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="decisions-table">
+                        <tr>
+                            <td colspan="8" class="loading">Loading decisions...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Decision Detail Modal -->
+    <div id="decision-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Decision Details</h2>
+            <div id="decision-detail">
+                <!-- Detail content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 TradeKing. Powered by LangGraph & Longbridge. Built by <a href="https://github.com/idealwei">idealwei</a></p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/decisions.js"></script>
+</body>
+</html>

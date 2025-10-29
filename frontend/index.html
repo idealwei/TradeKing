@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradeKing - AI Trading Dashboard</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>TradeKing</h1>
+                <span class="nav-subtitle">AI Trading Agent</span>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="nav-link active">Dashboard</a>
+                <a href="/portfolio.html" class="nav-link">Portfolio</a>
+                <a href="/decisions.html" class="nav-link">Decisions</a>
+                <a href="https://github.com/idealwei/TradeKing" target="_blank" class="nav-link">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-content">
+                    <h3 class="stat-label">Total Decisions</h3>
+                    <p class="stat-value" id="total-decisions">-</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-content">
+                    <h3 class="stat-label">Portfolio Value</h3>
+                    <p class="stat-value" id="portfolio-value">-</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-content">
+                    <h3 class="stat-label">Total P&L</h3>
+                    <p class="stat-value" id="total-pnl">-</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-content">
+                    <h3 class="stat-label">Avg Response Time</h3>
+                    <p class="stat-value" id="avg-time">-</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Performance Section -->
+        <div class="section">
+            <div class="section-header">
+                <h2>Model Performance</h2>
+                <button class="btn btn-primary" onclick="executeDecision()">Execute New Decision</button>
+            </div>
+            <div class="models-grid" id="models-grid">
+                <!-- Model cards will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Latest Decision Section -->
+        <div class="section">
+            <div class="section-header">
+                <h2>Latest Trading Decision</h2>
+                <select id="model-filter" class="select-input" onchange="loadLatestDecision()">
+                    <option value="">All Models</option>
+                    <option value="gpt5">GPT-5</option>
+                    <option value="deepseek">DeepSeek</option>
+                </select>
+            </div>
+            <div class="decision-card" id="latest-decision">
+                <p class="loading">Loading latest decision...</p>
+            </div>
+        </div>
+
+        <!-- Equity Curve Section -->
+        <div class="section">
+            <div class="section-header">
+                <h2>Equity Curve</h2>
+                <div class="controls">
+                    <select id="equity-model-select" class="select-input" onchange="loadEquityCurve()">
+                        <option value="gpt5">GPT-5</option>
+                        <option value="deepseek">DeepSeek</option>
+                    </select>
+                    <button class="btn btn-secondary" onclick="toggleScale()">Toggle Log Scale</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="equity-chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 TradeKing. Powered by LangGraph & Longbridge. Built by <a href="https://github.com/idealwei">idealwei</a></p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/dashboard.js"></script>
+</body>
+</html>
