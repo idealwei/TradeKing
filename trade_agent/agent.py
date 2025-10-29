@@ -52,11 +52,20 @@ class TradingAgent:
         ]
         if missing_keys:
             if not self.data_fetcher:
-                raise RuntimeError(
-                    f"Missing data for keys {missing_keys} and no TradingDataFetcher is configured."
-                )
-            refreshed = self.data_fetcher.gather_context(symbols=state.get("symbols"))
-            state.update(refreshed)
+                # Provide empty default data when no data_fetcher is configured
+                default_data = {
+                    "account_data": "{}",
+                    "positions_data": "{}",
+                    "market_data": "{}",
+                    "assets_data": "{}",
+                    "orders_data": "{}",
+                }
+                for key in missing_keys:
+                    if key in default_data:
+                        state[key] = default_data[key]
+            else:
+                refreshed = self.data_fetcher.gather_context(symbols=state.get("symbols"))
+                state.update(refreshed)
         return state
 
     def _compose_prompt(self, state: TradingState) -> TradingState:
